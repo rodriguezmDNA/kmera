@@ -1,10 +1,29 @@
 #!/usr/bin/python
+
+## This script looks at all possible kmers in a FASTA file and counts the number of times each string appears. It prints on screen each entry in the file (ie, each gene) and writes a table where the rows are the kmer sequence. 
+
+
+#These kmers can be then tested for enrichment. 
+# How? 
+
 import re # Module for regular expressions
 import time
+import sys
 
 # -- Start timer, open log file
 start_time = time.time()
 
+if len(sys.argv) != 3:
+	print 'Provide two arguments: FASTAfile and #kmers'
+	print 'Example run: \n python Kmera.py promoters.fa 20'
+	sys.exit(-1)
+
+## Start script
+#read file from input
+filename = sys.argv[1] #raw_input('Enter a filename: ')
+kInput = int(sys.argv[2])  #int(raw_input('Select number of kmers: '))
+
+## Define functions
 logFile = open('Motif.log', 'w')
 print >> logFile, 'FASTA reading and kmer finding \n'  # or f.write('...\n')
 #logFile.write('This is my log file \n')
@@ -33,14 +52,14 @@ def slidingWindow(header,sequence, kmerSize, SeqLen,kmerDictionary):
 
 
 def kmerCheck(kmerDictionary,kmer):
-	# Check kmer in dictionary. If found, increase count by 1. If not, create with starting count 1.
+	# Check kmer in dictionary. If found, increase count by 1. 
+	# If not, create with starting count 1.
 	if kmer in kmerDictionary.keys():
 		#print ("True")
 		kmerDictionary[kmer] += 1
 	else:
 		kmerDictionary[kmer] = 1
 	return (kmerDictionary)
-
 
 
 def readFASTA(fastafile,kmerSize,kmerDictionary):
@@ -91,8 +110,9 @@ def writeResults(kmerDictionary,resultFileName):
 
 ## -- Set initial parameters and variables
 # Parameters
-kmerSize = 8
-fastafile = "../promoters_onlyNLP_NUE_All_v2.fa"
+kmerSize = kInput
+#fastafile = "../promoters_onlyNLP_NUE_All_v2.fa"
+fastafile = filename
 # Variables
 kmerDictionary = {}
 ##
@@ -118,4 +138,5 @@ writeResults(kmerDictionary,resultFileName)
 logFile.close()
 print ("\n")
 print("--- Time taken: %s seconds ---" % (time.time() - start_time))
+
 
